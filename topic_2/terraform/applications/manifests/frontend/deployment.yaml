@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: asiayo
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - wordpress
+              topologyKey: topology.kubernetes.io/zone  # 確保 WordPress 節點在不同的 AZ 部署
+      initContainers:
+        - name: check-db-ready
+          image: imega/mysql-client
+          command:
+            - 'sh'
+            - '-c'
+            - 'until mysqladmin ping -h ${MYSQL_HOST} &> /dev/null; do echo waiting; sleep 2; done'
+          env:
+            - name: MYSQL_HOST
+              value: "mysql"
+      containers:
+        - name: wordpress
+          image: wordpress:latest
+          env:
+            - name: WORDPRESS_CONFIG_EXTRA
+              value: |
+                define('WP_HOME', 'http://asiayo.com');
+                define('WP_SITEURL', 'http://asiayo.com');
+            - name: WORDPRESS_DB_HOST
+              value: "mysql" 
+            - name: WORDPRESS_DB_NAME
+              value: "wordpress"
+            - name: WORDPRESS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-cluster-secret
+                  key: rootUser
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-cluster-secret
+                  key: rootPassword
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /wp-login.php
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /wp-login.php
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /wp-login.php
+              port: 80
+            failureThreshold: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

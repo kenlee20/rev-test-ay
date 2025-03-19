@@ -1,0 +1,25 @@
+credentials:
+  root:
+    user: "root"
+    password: "${mysql_root_password}"
+    host: "%"
+serverInstances: ${server_instances}
+routerInstances: ${router_instances}
+tls:
+  useSelfSigned: true
+router:
+  podSpec:
+    tolerations: &tolerations
+      - key: "dedicated"
+        operator: "Equal"
+        value: "database"
+        effect: "NoSchedule"
+podSpec:
+  tolerations: *tolerations
+datadirVolumeClaimTemplate:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3

@@ -1,0 +1,26 @@
+apiVersion: mysql.oracle.com/v2
+kind: InnoDBCluster
+metadata:
+  name: mycluster
+  namespace: asiayo
+spec:
+  secretName: mysql-secret
+  tlsUseSelfSigned: true
+  instances: 3
+  router:
+    instances: 2
+    podSpec: 
+      tolerations: &tolerations
+        - key: "dedicatedy"
+          operator: "Equal"
+          value: "database"
+          effect: "NoSchedule"
+  datadirVolumeClaimTemplate:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 20Gi
+    storageClassName: gp3 # 僅是測試所以sc reclaim_policy = "Delete"
+  podSpec:
+    tolerations: *tolerations
