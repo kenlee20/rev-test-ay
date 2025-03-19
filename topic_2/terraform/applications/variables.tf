@@ -13,9 +13,5 @@ variable "mysql_configuration" {
     server_instances = number
     router_instances = number
   })
-  default = {
-    server_instances = 3
-    router_instances = 1
-  }
 }
 

@@ -40,15 +40,11 @@ locals {
     "service",
     "ingress",
   ]
-  database_init_mainfast = [
-    "wp-secret",
-    "init-job",
-  ]
 }
 
 resource "kubernetes_manifest" "frontend" {
   for_each = toset(local.frontend_mainfast)
-  manifest = yamldecode(file("./manifests/frontend/${each.value}.yaml"))
+  manifest = yamldecode(file("./manifests/frontend/${each.key}.yaml",))
 
   depends_on = [
     kubernetes_namespace_v1.asiayo,
@@ -87,8 +83,7 @@ resource "helm_release" "mysql" {
 }
 
 resource "kubernetes_manifest" "database_init" {
-  for_each = toset(local.database_init_mainfast)
-  manifest = yamldecode(file("./manifests/database/${each.value}.yaml"))
+  manifest = yamldecode(file("./manifests/database/init-job.yaml"))
   depends_on = [
     kubernetes_namespace_v1.asiayo,
     kubernetes_storage_class_v1.gp3_retain,

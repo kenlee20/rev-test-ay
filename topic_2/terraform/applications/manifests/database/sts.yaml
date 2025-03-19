@@ -1,3 +1,4 @@
+# use helm instead of this
 apiVersion: mysql.oracle.com/v2
 kind: InnoDBCluster
 metadata:

@@ -36,7 +36,7 @@ module "eks" {
     }
   }
 
-  cluster_endpoint_public_access           = true
+  cluster_endpoint_public_access           = true # 方便部署所以設置於public
   enable_cluster_creator_admin_permissions = true
   depends_on                               = [module.vpc]
 }

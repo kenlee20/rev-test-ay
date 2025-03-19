@@ -49,16 +49,6 @@ spec:
             secretKeyRef:
               name: mysql-cluster-secret
               key: rootPassword
-        - name: WORDPRESS_USRE
-          valueFrom:
-            secretKeyRef:
-              name: mysql-wp-secret
-              key: wpUser
-        - name: WORDPRESS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-wp-secret
-              key: wpPassword
         - name: WORDPRESS_DB_HOST
           value:  mysql
       restartPolicy: OnFailure

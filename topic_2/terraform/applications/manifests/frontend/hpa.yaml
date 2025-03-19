@@ -9,7 +9,7 @@ spec:
     kind: Deployment
     name: web
   minReplicas: 3
-  maxReplicas: 10
+  maxReplicas: 12
   metrics:
     - type: Resource
       resource:
@@ -23,3 +23,4 @@ spec:
         target:
           type: Utilization
           averageUtilization: 60
+          
