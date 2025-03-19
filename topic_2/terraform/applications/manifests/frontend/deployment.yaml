@@ -14,13 +14,13 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
                   - key: app
                     operator: In
                     values:
-                      - wordpress
+                      - web
               topologyKey: topology.kubernetes.io/zone  # 確保 WordPress 節點在不同的 AZ 部署
       initContainers:
         - name: check-db-ready
